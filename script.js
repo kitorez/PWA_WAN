@@ -56,3 +56,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, 60000); // Check every minute (60,000 ms)
 });
+
+//added to test git pushing
