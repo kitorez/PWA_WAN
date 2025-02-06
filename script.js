@@ -1,60 +1,41 @@
-// Ensure the DOM is fully loaded before running script
-document.addEventListener("DOMContentLoaded", () => {
-    // Get the current timestamp in days
-    function getCurrentDay() {
-        let now = new Date();
-        let utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-        return Math.floor(utcDate.getTime() / (1000 * 60 * 60 * 24));
-    }
+// Get the current timestamp in days
+function getCurrentDay() {
+    let now = new Date();
+    let utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    return Math.floor(utcDate.getTime() / (1000 * 60 * 60 * 24));
+}
 
-    const START_DAYS = 10000;
-    const START_KEY = "countdownStartDay";
-    const COUNTDOWN_KEY = "countdownRemaining"; // Stores last countdown value
+// Constants
+const START_DAYS = 10000;
+const START_KEY = "countdownStartDay";
 
-    function getStoredStartDay() {
-        let storedStartDay = localStorage.getItem(START_KEY);
-        if (storedStartDay !== null) {
-            let parsedDay = parseInt(storedStartDay, 10);
-            if (!isNaN(parsedDay)) {
-                return parsedDay;
-            }
-        }
-        let currentDay = getCurrentDay();
-        localStorage.setItem(START_KEY, currentDay);
-        return currentDay;
-    }
-
-    let storedStartDay = getStoredStartDay();
-
-    function updateCountdown() {
-        let today = getCurrentDay();
-        let daysElapsed = today - storedStartDay;
-        let daysRemaining = START_DAYS - daysElapsed;
-        daysRemaining = Math.max(daysRemaining, 0);
-
-        // Store the countdown in localStorage for syncing across devices
-        localStorage.setItem(COUNTDOWN_KEY, daysRemaining);
-
-        // Update the UI
-        let countdownElement = document.getElementById("countdown");
-        if (countdownElement) {
-            countdownElement.textContent = daysRemaining;
+// Retrieve stored start day or initialize it
+function getStoredStartDay() {
+    let storedStartDay = localStorage.getItem(START_KEY);
+    
+    if (storedStartDay !== null) {
+        let parsedDay = parseInt(storedStartDay, 10);
+        if (!isNaN(parsedDay)) {
+            return parsedDay; // Use existing stored start day
         }
     }
 
-    // Run update function once when the page loads
-    updateCountdown();
+    let currentDay = getCurrentDay();
+    localStorage.setItem(START_KEY, currentDay);
+    return currentDay;
+}
 
-    // ✅ Update every minute instead of waiting a full day
-    setInterval(() => {
-        let lastStoredCountdown = parseInt(localStorage.getItem(COUNTDOWN_KEY), 10);
-        updateCountdown();
+// Initialize the correct countdown start day
+let storedStartDay = getStoredStartDay();
 
-        // If the countdown changed (a new day started), refresh UI
-        if (parseInt(localStorage.getItem(COUNTDOWN_KEY), 10) !== lastStoredCountdown) {
-            console.log("New day detected, updating countdown...");
-        }
-    }, 60000); // Check every minute (60,000 ms)
-});
+// Function to update countdown display
+function updateCountdown() {
+    let today = getCurrentDay();
+    let daysElapsed = today - storedStartDay;
+    let daysRemaining = START_DAYS - daysElapsed;
+    daysRemaining = Math.max(daysRemaining, 0); // Ensure it never goes below 0
+    document.getElementById("countdown").textContent = daysRemaining;
+}
 
-//added to test git pushing
+// Run update function on load
+updateCountdown();
