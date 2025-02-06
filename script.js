@@ -8,6 +8,7 @@ function getCurrentDay() {
 // Constants
 const START_DAYS = 10000;
 const START_KEY = "countdownStartDay";
+const GOALS_KEY = "userGoals";
 
 // Retrieve stored start day or initialize it
 function getStoredStartDay() {
@@ -16,7 +17,7 @@ function getStoredStartDay() {
     if (storedStartDay !== null) {
         let parsedDay = parseInt(storedStartDay, 10);
         if (!isNaN(parsedDay)) {
-            return parsedDay; // Use existing stored start day
+            return parsedDay;
         }
     }
 
@@ -39,3 +40,54 @@ function updateCountdown() {
 
 // Run update function on load
 updateCountdown();
+
+// Function to Add Goal
+function addGoal() {
+    let goalName = document.getElementById("goal-name").value.trim();
+    let goalDate = document.getElementById("goal-date").value;
+
+    if (!goalName || !goalDate) {
+        alert("Please enter a goal name and select a target date.");
+        return;
+    }
+
+    let newGoal = {
+        name: goalName,
+        date: goalDate
+    };
+
+    let goals = JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
+    goals.push(newGoal);
+    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+
+    document.getElementById("goal-name").value = "";
+    document.getElementById("goal-date").value = "";
+
+    displayGoals();
+}
+
+// Function to Display Goals
+function displayGoals() {
+    let goalList = document.getElementById("goal-list");
+    goalList.innerHTML = "";
+
+    let goals = JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
+
+    goals.forEach((goal, index) => {
+        let listItem = document.createElement("li");
+        listItem.innerHTML = `${goal.name} - <strong>${goal.date}</strong> 
+        <button onclick="deleteGoal(${index})">X</button>`;
+        goalList.appendChild(listItem);
+    });
+}
+
+// Function to Delete Goal
+function deleteGoal(index) {
+    let goals = JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
+    goals.splice(index, 1);
+    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+    displayGoals();
+}
+
+// Display Goals on Load
+displayGoals();
