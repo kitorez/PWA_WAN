@@ -1,4 +1,4 @@
-const CACHE_NAME = "pwa-cache-v6"; // Increment to force updates
+const CACHE_NAME = "pwa-cache-v7"; // Increment this every time we update
 const STATIC_FILES = [
     "/PWA_WAN/",
     "/PWA_WAN/index.html",
@@ -7,6 +7,7 @@ const STATIC_FILES = [
     "/PWA_WAN/manifest.json"
 ];
 
+// Install Event - Cache Files
 self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -16,6 +17,7 @@ self.addEventListener("install", (event) => {
     );
 });
 
+// Activate Event - Delete Old Caches
 self.addEventListener("activate", (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
@@ -27,10 +29,13 @@ self.addEventListener("activate", (event) => {
     console.log("Service Worker: Activated, old caches cleared.");
 });
 
+// Fetch Event - Always Try Network First
 self.addEventListener("fetch", (event) => {
     event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
+        fetch(event.request).then((response) => {
+            return response;
+        }).catch(() => {
+            return caches.match(event.request);
         })
     );
 });
