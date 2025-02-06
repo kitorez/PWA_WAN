@@ -3,40 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World PWA</title>
+    <title>10,000 Days Countdown</title>
 
-    <!-- 🔹 Link to CSS file -->
+    <!-- Link to CSS -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- 🔹 Link to Web App Manifest -->
+    <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
 
-    <!-- 🔹 Ensure Safari & iOS Support -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Countdown Timer">
-    <link rel="apple-touch-icon" href="icon-192.png"> <!-- Make sure this file exists! -->
-
-    <!-- 🔹 Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/PWA_WAN/service-worker.js')
-                    .then(() => console.log("Service Worker Registered"))
-                    .catch(error => console.log("Service Worker Registration Failed:", error));
-            });
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(() => console.log("Service Worker Registered"))
+                .catch(error => console.log("Service Worker Registration Failed:", error));
         }
     </script>
 </head>
 <body>
-   
-    <h1>Countdown Timer</h1>
-    <p>Days remaining:</p>
-    <h2 id="countdown">10,000</h2> <!-- This is where the countdown will appear -->
+    <div class="countdown-container">
+        <div class="visual-background"></div>
+        <h1 class="countdown-title">Time Left:</h1>
+        <h2 id="countdown" class="countdown-number">10,000</h2>
+    </div>
 
-    <!-- 🔹 Load JavaScript at the End for Better Performance -->
     <script src="script.js"></script>
-
 </body>
 </html>
-
