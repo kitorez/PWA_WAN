@@ -73,6 +73,11 @@ function displayGoals() {
 
     let goals = JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
 
+    if (goals.length === 0) {
+        goalList.innerHTML = "<p>No goals set yet.</p>";
+        return;
+    }
+
     goals.forEach((goal, index) => {
         let listItem = document.createElement("li");
         listItem.innerHTML = `${goal.name} - <strong>${goal.date}</strong> 
@@ -89,5 +94,7 @@ function deleteGoal(index) {
     displayGoals();
 }
 
-// Display Goals on Load
-displayGoals();
+// **Make sure goals reload properly**
+document.addEventListener("DOMContentLoaded", () => {
+    displayGoals();
+});
