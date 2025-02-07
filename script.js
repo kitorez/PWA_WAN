@@ -1,14 +1,15 @@
+// Constants
+const START_DAYS = 10000;
+const START_KEY = "countdownStartDay";
+const GOALS_KEY = "userGoals";
+const PROGRESS_KEY = "goalProgress";
+
 // Get the current timestamp in days
 function getCurrentDay() {
     let now = new Date();
     let utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     return Math.floor(utcDate.getTime() / (1000 * 60 * 60 * 24));
 }
-
-// Constants
-const START_DAYS = 10000;
-const START_KEY = "countdownStartDay";
-const GOALS_KEY = "userGoals";
 
 // Retrieve stored start day or initialize it
 function getStoredStartDay() {
@@ -34,12 +35,88 @@ function updateCountdown() {
     let today = getCurrentDay();
     let daysElapsed = today - storedStartDay;
     let daysRemaining = START_DAYS - daysElapsed;
-    daysRemaining = Math.max(daysRemaining, 0); // Ensure it never goes below 0
-    document.getElementById("countdown").textContent = daysRemaining;
+    document.getElementById("countdown").textContent = Math.max(daysRemaining, 0);
+}
+updateCountdown();
+
+// Function to Load Goals
+function loadGoals() {
+    return JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
 }
 
-// Run update function on load
-updateCountdown();
+// Function to Save Goals
+function saveGoals(goals) {
+    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+}
+
+// Function to Load Progress
+function loadProgress() {
+    return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+}
+
+// Function to Save Progress
+function saveProgress(progress) {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+}
+
+// Function to Display Goals
+function displayGoals() {
+    let goalList = document.getElementById("goal-list");
+    goalList.innerHTML = "";
+
+    let goals = loadGoals();
+    let progress = loadProgress();
+    let today = getCurrentDay();
+
+    if (goals.length === 0) {
+        goalList.innerHTML = "<p>No goals set yet.</p>";
+        return;
+    }
+
+    goals.forEach((goal, index) => {
+        let listItem = document.createElement("li");
+        listItem.innerHTML = `${goal.name} - <strong>${goal.date}</strong>`;
+
+        let buttonContainer = document.createElement("div");
+        buttonContainer.classList.add("toggle-buttons");
+
+        let yesButton = document.createElement("button");
+        yesButton.textContent = "Yes";
+        yesButton.classList.add("completed");
+        yesButton.onclick = () => updateProgress(index, true);
+
+        let noButton = document.createElement("button");
+        noButton.textContent = "No";
+        noButton.classList.add("not-completed");
+        noButton.onclick = () => updateProgress(index, false);
+
+        // Check if today's progress is already set
+        if (progress[today] && progress[today][index] === true) {
+            yesButton.style.opacity = "1";
+            noButton.style.opacity = "0.5";
+        } else if (progress[today] && progress[today][index] === false) {
+            noButton.style.opacity = "1";
+            yesButton.style.opacity = "0.5";
+        }
+
+        buttonContainer.appendChild(yesButton);
+        buttonContainer.appendChild(noButton);
+        listItem.appendChild(buttonContainer);
+        goalList.appendChild(listItem);
+    });
+}
+
+// Function to Update Progress
+function updateProgress(goalIndex, completed) {
+    let today = getCurrentDay();
+    let progress = loadProgress();
+
+    if (!progress[today]) progress[today] = {};
+    progress[today][goalIndex] = completed;
+    saveProgress(progress);
+
+    displayGoals();
+}
 
 // Function to Add Goal
 function addGoal() {
@@ -51,50 +128,13 @@ function addGoal() {
         return;
     }
 
-    let newGoal = {
-        name: goalName,
-        date: goalDate
-    };
-
-    let goals = JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
+    let newGoal = { name: goalName, date: goalDate };
+    let goals = loadGoals();
     goals.push(newGoal);
-    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
-
-    document.getElementById("goal-name").value = "";
-    document.getElementById("goal-date").value = "";
+    saveGoals(goals);
 
     displayGoals();
 }
 
-// Function to Display Goals
-function displayGoals() {
-    let goalList = document.getElementById("goal-list");
-    goalList.innerHTML = "";
-
-    let goals = JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
-
-    if (goals.length === 0) {
-        goalList.innerHTML = "<p>No goals set yet.</p>";
-        return;
-    }
-
-    goals.forEach((goal, index) => {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = `${goal.name} - <strong>${goal.date}</strong> 
-        <button onclick="deleteGoal(${index})">X</button>`;
-        goalList.appendChild(listItem);
-    });
-}
-
-// Function to Delete Goal
-function deleteGoal(index) {
-    let goals = JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
-    goals.splice(index, 1);
-    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
-    displayGoals();
-}
-
-// **Make sure goals reload properly**
-document.addEventListener("DOMContentLoaded", () => {
-    displayGoals();
-});
+// Load Goals on Page Load
+document.addEventListener("DOMContentLoaded", displayGoals);

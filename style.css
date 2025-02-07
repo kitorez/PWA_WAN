@@ -11,51 +11,6 @@ body {
     height: 100vh;
 }
 
-/* Countdown Section */
-/* Countdown Container */
-.countdown-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    padding: 20px;
-}
-
-/* Visual Background */
-.visual-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, #FCE38A, #F38181); /* Temporary Gradient */
-    opacity: 0.4;
-    z-index: -1;
-    border-radius: 20px;
-}
-
-/* Countdown Title */
-.countdown-title {
-    font-size: 24px;
-    font-weight: 300;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-/* Countdown Number */
-.countdown-number {
-    font-size: 72px;
-    font-weight: bold;
-    color: #222;
-    transition: transform 0.3s ease-in-out;
-}
-
-/* Subtle Animation */
-.countdown-number:hover {
-    transform: scale(1.05);
-}
-
-
-
 /* Goal Section */
 .goal-section {
     margin-top: 20px;
@@ -70,20 +25,6 @@ body {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-button {
-    background-color: #007aff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: #0051a8;
 }
 
 /* Goal List */
@@ -107,4 +48,33 @@ li {
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+/* Toggle Buttons */
+.toggle-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0051a8;
+}
+
+.completed {
+    background-color: #28a745 !important; /* Green */
+}
+
+.not-completed {
+    background-color: #dc3545 !important; /* Red */
 }
