@@ -78,3 +78,22 @@ button:hover {
 .not-completed {
     background-color: #dc3545 !important; /* Red */
 }
+
+/* Navigation Button */
+.navigation {
+    margin-top: 20px;
+}
+
+.nav-button {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007aff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.nav-button:hover {
+    background-color: #0051a8;
+}

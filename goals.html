@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10,000 Days Countdown</title>
+    <title>Goal Setting</title>
 
     <!-- Link to CSS -->
     <link rel="stylesheet" href="style.css">
@@ -20,14 +20,23 @@
     </script>
 </head>
 <body>
-    <div class="countdown-container">
-        <h1 class="countdown-title">Time Left:</h1>
-        <h2 id="countdown" class="countdown-number">10,000</h2>
+    <h1>Goal Setting</h1>
+
+    <div class="goal-section">
+        <h2>Set a Goal</h2>
+        <input type="text" id="goal-name" placeholder="Enter your goal...">
+        <input type="date" id="goal-date">
+        <button onclick="addGoal()">Add Goal</button>
     </div>
 
-    <!-- Navigation to Goal Setting Page -->
+    <div class="goal-list">
+        <h2>Your Goals</h2>
+        <ul id="goal-list"></ul>
+    </div>
+
+    <!-- Back to Main Page -->
     <div class="navigation">
-        <a href="goals.html" class="nav-button">Set Goals</a>
+        <a href="index.html" class="nav-button">Back to Countdown</a>
     </div>
 
     <script src="script.js"></script>
