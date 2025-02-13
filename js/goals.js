@@ -1,67 +1,15 @@
-// Constants
-const START_DAYS = 10000;
-const START_KEY = "countdownStartDay";
-const GOALS_KEY = "userGoals";
-const PROGRESS_KEY = "goalProgress";
-
-// Get the current timestamp in days
+// Ensure getCurrentDay() is available
 function getCurrentDay() {
     let now = new Date();
     let utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     return Math.floor(utcDate.getTime() / (1000 * 60 * 60 * 24));
 }
 
-// Retrieve stored start day or initialize it
-function getStoredStartDay() {
-    let storedStartDay = localStorage.getItem(START_KEY);
-    
-    if (storedStartDay !== null) {
-        let parsedDay = parseInt(storedStartDay, 10);
-        if (!isNaN(parsedDay)) {
-            return parsedDay;
-        }
-    }
-
-    let currentDay = getCurrentDay();
-    localStorage.setItem(START_KEY, currentDay);
-    return currentDay;
-}
-
-// Initialize the correct countdown start day
-let storedStartDay = getStoredStartDay();
-
-// Function to update countdown display
-function updateCountdown() {
-    let today = getCurrentDay();
-    let daysElapsed = today - storedStartDay;
-    let daysRemaining = START_DAYS - daysElapsed;
-    document.getElementById("countdown").textContent = Math.max(daysRemaining, 0);
-}
-updateCountdown();
-
-// Function to Load Goals
-function loadGoals() {
-    return JSON.parse(localStorage.getItem(GOALS_KEY)) || [];
-}
-
-// Function to Save Goals
-function saveGoals(goals) {
-    localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
-}
-
-// Function to Load Progress
-function loadProgress() {
-    return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
-}
-
-// Function to Save Progress
-function saveProgress(progress) {
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-}
-
 // Function to Display Goals
 function displayGoals() {
     let goalList = document.getElementById("goal-list");
+    if (!goalList) return;
+
     goalList.innerHTML = "";
 
     let goals = loadGoals();
@@ -90,7 +38,11 @@ function displayGoals() {
         noButton.classList.add("not-completed");
         noButton.onclick = () => updateProgress(index, false);
 
-        // Check if today's progress is already set
+        let deleteButton = document.createElement("button");
+        deleteButton.innerHTML = "&times;"; // HTML entity for "×" symbol
+        deleteButton.classList.add("delete-btn");
+        deleteButton.onclick = () => removeGoal(index);
+
         if (progress[today] && progress[today][index] === true) {
             yesButton.style.opacity = "1";
             noButton.style.opacity = "0.5";
@@ -101,25 +53,14 @@ function displayGoals() {
 
         buttonContainer.appendChild(yesButton);
         buttonContainer.appendChild(noButton);
+        buttonContainer.appendChild(deleteButton);
         listItem.appendChild(buttonContainer);
         goalList.appendChild(listItem);
     });
 }
 
-// Function to Update Progress
-function updateProgress(goalIndex, completed) {
-    let today = getCurrentDay();
-    let progress = loadProgress();
-
-    if (!progress[today]) progress[today] = {};
-    progress[today][goalIndex] = completed;
-    saveProgress(progress);
-
-    displayGoals();
-}
-
 // Function to Add Goal
-function addGoal() {
+window.addGoal = function () {
     let goalName = document.getElementById("goal-name").value.trim();
     let goalDate = document.getElementById("goal-date").value;
 
@@ -133,8 +74,39 @@ function addGoal() {
     goals.push(newGoal);
     saveGoals(goals);
 
-    displayGoals();
-}
+    // Clear input fields after adding a goal
+    document.getElementById("goal-name").value = "";
+    document.getElementById("goal-date").value = "";
 
-// Load Goals on Page Load
-document.addEventListener("DOMContentLoaded", displayGoals);
+    displayGoals();
+};
+
+window.removeGoal = function (index) {
+    let goals = loadGoals();
+
+    // Confirm deletion
+    if (!confirm(`Are you sure you want to remove "${goals[index].name}"?`)) {
+        return;
+    }
+
+    // Remove the goal at the given index
+    goals.splice(index, 1);
+    saveGoals(goals);
+
+    // Refresh goal list
+    displayGoals();
+};
+
+// Load goals on page load
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("goals.js loaded!");
+    
+    // Ensure we load goals immediately
+    displayGoals();
+
+    // Attach event listener to "Add Goal" button
+    let addGoalBtn = document.getElementById("add-goal-btn");
+    if (addGoalBtn) {
+        addGoalBtn.addEventListener("click", addGoal);
+    }
+});

@@ -97,3 +97,19 @@ button:hover {
 .nav-button:hover {
     background-color: #0051a8;
 }
+
+.delete-btn {
+    background-color: #dc3545; /* Red */
+    color: white; /* Ensures the X is white */
+    border: none;
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+    font-weight: bold; /* Makes the X stand out */
+}
+
+.delete-btn:hover {
+    background-color: #b02a37;
+}
